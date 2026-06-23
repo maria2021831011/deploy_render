@@ -1,97 +1,177 @@
-# How to run?
+# Flask Application Deployment on Render
 
+This repository contains a Flask web application deployed using Render.
 
+## Prerequisites
+
+* Python 3.11+
+* Git
+* GitHub Account
+* Render Account
+
+## Local Setup
+
+### Create Virtual Environment
+
+```bash
 conda create -n myenv python=3.11 -y
-
 conda activate myenv
+```
 
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
-
-# AWS-CICD-Deployment-with-Github-Actions
-
-
-## 1. Login to AWS console.
-
-
-## 2. Create IAM user for deployment
-
-
-```
-#with specific access
-
-1. EC2 access : It is virtual machine
-
-2. ECR: Elastic Container registry to save your docker image in aws
-
-
-#Description: About the deployment
-
-1. Build docker image of the source code
-
-2. Push your docker image to ECR
-
-3. Launch Your EC2 
-
-4. Pull Your image from ECR in EC2
-
-5. Lauch your docker image in EC2
-
-#Policy:
-
-1. AmazonEC2ContainerRegistryFullAccess
-
-2. AmazonEC2FullAccess
 ```
 
-## 3. Create ECR repo to store/save docker image
+### Run the Application
 
-
-```
-- Save the URI: 315865595366.dkr.ecr.us-east-1.amazonaws.com/avgcal
-```
-
-## 4. Create EC2 machine (Ubuntu)
-
-
-## 5. Open EC2 and Install docker in EC2 Machine:
-
-
-```
-#optinal
-
-sudo apt-get update -y
-
-sudo apt-get upgrade
-
-#required
-
-curl -fsSL https://get.docker.com -o get-docker.sh
-
-sudo sh get-docker.sh
-
-sudo usermod -aG docker ubuntu
-
-newgrp docker
+```bash
+python app.py
 ```
 
-# 6. Configure EC2 as self-hosted runner:
-
-
-```
-setting>actions>runner>new self hosted runner> choose os> then run command one by one
-```
-
-# 7. Setup github secrets:
-
+The application will be available at:
 
 ```
-AWS_ACCESS_KEY_ID=
-
-AWS_SECRET_ACCESS_KEY=
-
-AWS_REGION = us-east-1
-
-AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
-
-ECR_REPOSITORY_NAME = simple-app
+http://localhost:5000
 ```
+
+---
+
+## Project Structure
+
+```text
+project/
+│
+├── app.py
+├── requirements.txt
+├── Procfile
+├── templates/
+├── static/
+└── README.md
+```
+
+---
+
+## Deployment on Render
+
+### Step 1: Push Code to GitHub
+
+```bash
+git init
+git add .
+git commit -m "Initial Commit"
+git branch -M main
+git remote add origin <repository-url>
+git push -u origin main
+```
+
+### Step 2: Create a Render Web Service
+
+1. Log in to Render.
+2. Click **New +**.
+3. Select **Web Service**.
+4. Connect your GitHub repository.
+5. Choose the repository.
+
+### Step 3: Configure Build Settings
+
+#### Build Command
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Start Command
+
+```bash
+gunicorn app:app
+```
+
+> If your Flask application file is named `main.py`, use:
+
+```bash
+gunicorn main:app
+```
+
+### Step 4: Deploy
+
+Click **Create Web Service** and wait for the deployment to complete.
+
+Render will automatically:
+
+* Clone the repository
+* Install dependencies
+* Build the application
+* Deploy the service
+
+---
+
+## Environment Variables
+
+If your application uses secrets or database credentials, add them in:
+
+**Render Dashboard → Environment Variables**
+
+Example:
+
+```env
+SECRET_KEY=your_secret_key
+DB_HOST=your_database_host
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+Access them in Flask:
+
+```python
+import os
+
+secret_key = os.getenv("SECRET_KEY")
+```
+
+---
+
+## Requirements
+
+Example `requirements.txt`:
+
+```text
+Flask
+gunicorn
+```
+
+Generate automatically:
+
+```bash
+pip freeze > requirements.txt
+```
+
+---
+
+## Procfile
+
+Create a file named `Procfile` in the project root:
+
+```text
+web: gunicorn app:app
+```
+
+---
+
+## Live Deployment
+
+After successful deployment, Render provides a URL similar to:
+
+```text
+https://your-app-name.onrender.com
+```
+
+Visit the URL to access the application.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
